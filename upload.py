@@ -27,8 +27,8 @@ if st.button("Predict"):
     # Display prediction results
     st.write(f"**Predicted Class:** {predicted_class}")
     st.write(f"**Prediction Probabilities:** {predicted_proba}")
-    # Generate advice based on prediction results    p
-    robability = predicted_proba[predicted_class] * 100
+    # Generate advice based on prediction results    
+    probability = predicted_proba[predicted_class] * 100
     if predicted_class == 1:
         advice = (
             f"According to our model, you have a high risk of heart disease. "
