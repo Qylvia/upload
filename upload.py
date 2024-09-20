@@ -49,7 +49,6 @@ if st.button("Predict"):
     # Calculate SHAP values and display force plot
     explainer = shap.Explainer(model)
     shap_values = explainer.shap_values(pd.DataFrame([feature_values], columns=feature_names))
-    shap.force_plot(explainer.expected_value, shap_values[0], pd.DataFrame([feature_values], columns=feature_names),
-                    matplotlib=True)
+    shap.force_plot(explainer.expected_value[0], shap_values[:,0], pd.DataFrame([feature_values], columns=feature_names))
     plt.savefig("shap_force_plot.png", bbox_inches='tight', dpi=1200)
     st.image("shap_force_plot.png")
