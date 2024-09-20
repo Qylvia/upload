@@ -9,4 +9,4 @@ scipy==1.13.1
 seaborn==0.13.2
 setuptools==69.5.1
 shapely==2.0.4
-shap==0.24.0
+shap==0.45.0
