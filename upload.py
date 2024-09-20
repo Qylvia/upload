@@ -13,9 +13,9 @@ INRG_stage_option = {
 }
 feature_names = ['AGE', 'LDH', 'INRG_STAGE', 'RAD_SCORE']
 st.title('NB Classification')
-age = st.number_input('Age:', min_value=0, max_value=120)
-LDH = st.number_input('LDH:', min_value=-10, max_value=10, value=0)
-rad_score = st.number_input('Rad_Score:', min_value=-10, max_value=10, value=0)
+age = st.number_input('Age:')
+LDH = st.number_input('LDH:')
+rad_score = st.number_input('Rad_Score:')
 INRG_stage = st.selectbox('INRG_stage: ', options=list(INRG_stage_option.keys()),
                           format_func=lambda x: INRG_stage_option[x])
 feature_values = [age, LDH, INRG_stage, rad_score]
