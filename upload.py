@@ -43,31 +43,35 @@ INRG_stage = st.selectbox('INRG_stage: ', options=list(INRG_stage_option.keys())
                           format_func=lambda x: INRG_stage_option[x])
 uploaded_file = st.file_uploader("请选择文件进行上传", type=None)
 if uploaded_file is not None:
-    patient = st.number_input("输入想预测的病人所在行数：")
     df = pd.read_csv(uploaded_file)
     df = df[whole_feature]
-    first_row = df.iloc[patient]
-    st.write(f"数值为：")
-    st.write(first_row)
+    patient = st.number_input("输入想预测的病人所在行数：",step=1,min_value=0,max_value=len(df))
+    if patient !=0:
+        first_row = df.iloc[patient]
+        st.write(f"数值为：")
+        st.write(first_row)
 
-    age = st.number_input('Age:')
-    LDH = st.number_input('LDH:')
-    cli_data = [age, LDH, INRG_stage]
-    feature_values = pd.concat([cli_data, first_row], axis=0)
-    features = np.array([feature_values])
-    cutoff = 0.4606228354851223
-    
-    # 检查是否有文件上传
-    if st.button("Predict"):
-        # Predict class and probabilities
-        predicted_proba = model.predict_proba(features)[0]
-        if predicted_proba > cutoff:
-            predicted_class = 1
-        else:
-            predicted_class = 0
-        # Display prediction results
-        st.write(f"**Predicted Class:** {predicted_class}")
-        st.write(f"**Prediction Probabilities:** {predicted_proba}")
+        age = st.number_input('Age:')
+        LDH = st.number_input('LDH:')
+        cli_data = [age, LDH, INRG_stage]
+        feature_values = pd.concat([cli_data, first_row], axis=0)
+        features = np.array([feature_values])
+        cutoff = 0.4606228354851223
+
+        # 检查是否有文件上传
+        if st.button("Predict"):
+            # Predict class and probabilities
+            predicted_proba = model.predict_proba(features)[0]
+            if predicted_proba > cutoff:
+                predicted_class = 1
+            else:
+                predicted_class = 0
+            # Display prediction results
+            st.write(f"**Predicted Class:** {predicted_class}")
+            st.write(f"**Prediction Probabilities:** {predicted_proba}")
+            # Generate advice based on prediction results    p
+            probability = predicted_proba[predicted_class] * 100
+        # 读取 CSV 文件)
         # Generate advice based on prediction results    p
         probability = predicted_proba[predicted_class] * 100
         # 读取 CSV 文件
