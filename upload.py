@@ -62,7 +62,7 @@ if uploaded_file is not None:
         
             # Predict class and probabilities
             predicted_proba = model.predict_proba(features)[0]
-            if predicted_proba > cutoff:
+            if predicted_proba[1] > cutoff:
                 predicted_class = 1
             else:
                 predicted_class = 0
