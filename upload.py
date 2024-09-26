@@ -54,7 +54,7 @@ if uploaded_file is not None:
         LDH = st.number_input('LDH:')
     if st.button("Predict"):
             cli_data = [age, LDH, INRG_stage]
-            feature_values = pd.concat([cli_data, first_row], axis=0)
+            feature_values = pd.concat([pd.Series(cli_data), pd.Series(first_row)], axis=0)
             features = np.array([feature_values])
             cutoff = 0.4606228354851223
 
