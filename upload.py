@@ -50,24 +50,24 @@ if uploaded_file is not None:
     st.write(f"数值为：")
     st.write(first_row)
 
-age = st.number_input('Age:')
-LDH = st.number_input('LDH:')
-cli_data = [age, LDH, INRG_stage]
-feature_values = pd.concat([cli_data, first_row], axis=0)
-features = np.array([feature_values])
-cutoff = 0.4606228354851223
-
-# 检查是否有文件上传
-if st.button("Predict"):
-    # Predict class and probabilities
-    predicted_proba = model.predict_proba(features)[0]
-    if predicted_proba > cutoff:
-        predicted_class = 1
-    else:
-        predicted_class = 0
-    # Display prediction results
-    st.write(f"**Predicted Class:** {predicted_class}")
-    st.write(f"**Prediction Probabilities:** {predicted_proba}")
-    # Generate advice based on prediction results    p
-    probability = predicted_proba[predicted_class] * 100
-    # 读取 CSV 文件
+    age = st.number_input('Age:')
+    LDH = st.number_input('LDH:')
+    cli_data = [age, LDH, INRG_stage]
+    feature_values = pd.concat([cli_data, first_row], axis=0)
+    features = np.array([feature_values])
+    cutoff = 0.4606228354851223
+    
+    # 检查是否有文件上传
+    if st.button("Predict"):
+        # Predict class and probabilities
+        predicted_proba = model.predict_proba(features)[0]
+        if predicted_proba > cutoff:
+            predicted_class = 1
+        else:
+            predicted_class = 0
+        # Display prediction results
+        st.write(f"**Predicted Class:** {predicted_class}")
+        st.write(f"**Prediction Probabilities:** {predicted_proba}")
+        # Generate advice based on prediction results    p
+        probability = predicted_proba[predicted_class] * 100
+        # 读取 CSV 文件
