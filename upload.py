@@ -5,50 +5,69 @@ import pandas as pd
 import shap
 import matplotlib.pyplot as plt
 
-model = joblib.load('LogisticRegression.pkl')
+
+model = joblib.load('model.pkl')
 
 INRG_stage_option = {
     0: 'Normal(0)',
     1: 'Abnormal(1)',
 }
-feature_names = ['AGE', 'LDH', 'INRG_STAGE', 'RAD_SCORE']
-st.title('NB Classification')
-age = st.number_input('Age:')
-LDH = st.number_input('LDH:')
-rad_score = st.number_input('Rad_Score:')
+feature_names = ['AGE', 'LDH', 'INRG_STAGE']
+st.title('神母细胞瘤分型')
+whole_feature = ['CT_TR_original_firstorder_Median',
+                 'PET_TR_original_ngtdm_Contrast',
+                 'PET_TR_original_gldm_SmallDependenceLowGrayLevelEmphasis',
+                 'CT_TR_original_shape_Elongation',
+                 'CT_TR_original_glcm_InverseVariance',
+                 'PET_TR_original_glrlm_LongRunLowGrayLevelEmphasis',
+                 'PET_TR_original_glszm_LargeAreaHighGrayLevelEmphasis',
+                 'CT_TR_original_firstorder_10Percentile',
+                 'PET_TR_original_glcm_DifferenceEntropy',
+                 'PET_TR_original_gldm_LargeDependenceHighGrayLevelEmphasis',
+                 'PET_TR_original_firstorder_10Percentile',
+                 'CT_TR_original_firstorder_Mean', 'PET_TR_original_ngtdm_Busyness',
+                 'PET_TR_original_firstorder_Skewness',
+                 'PET_TR_original_firstorder_Energy',
+                 'CT_TR_original_gldm_DependenceVariance',
+                 'CT_TR_original_gldm_LargeDependenceEmphasis',
+                 'CT_TR_original_shape_MajorAxisLength',
+                 'CT_TR_original_glrlm_RunEntropy', 'CT_TR_original_ngtdm_Contrast',
+                 'CT_TR_original_gldm_DependenceNonUniformityNormalized',
+                 'CT_TR_original_glcm_Correlation',
+                 'CT_TR_original_shape_LeastAxisLength',
+                 'PET_TR_original_firstorder_Maximum',
+                 'PET_TR_original_glcm_Correlation', '2DPET_DL_0', '2DCT_DL_92',
+                 '2DPET_DL_1', '2DCT_DL_187', '2DCT_DL_116', '2DCT_DL_120']
+
 INRG_stage = st.selectbox('INRG_stage: ', options=list(INRG_stage_option.keys()),
                           format_func=lambda x: INRG_stage_option[x])
-feature_values = [age, LDH, INRG_stage, rad_score]
+uploaded_file = st.file_uploader("请选择文件进行上传", type=None)
+if uploaded_file is not None:
+    patient = st.number_input("输入想预测的病人所在行数：")
+    df = pd.read_csv(uploaded_file)
+    df = df[whole_feature]
+    first_row = df.iloc[patient]
+    st.write(f"数值为：")
+    st.write(first_row)
+
+age = st.number_input('Age:')
+LDH = st.number_input('LDH:')
+cli_data = [age, LDH, INRG_stage]
+feature_values = pd.concat([cli_data, first_row], axis=0)
 features = np.array([feature_values])
+cutoff = 0.4606228354851223
+
+# 检查是否有文件上传
 if st.button("Predict"):
     # Predict class and probabilities
-    predicted_class = model.predict(features)[0]
     predicted_proba = model.predict_proba(features)[0]
+    if predicted_proba > cutoff:
+        predicted_class = 1
+    else:
+        predicted_class = 0
     # Display prediction results
     st.write(f"**Predicted Class:** {predicted_class}")
     st.write(f"**Prediction Probabilities:** {predicted_proba}")
-    # Generate advice based on prediction results    
+    # Generate advice based on prediction results    p
     probability = predicted_proba[predicted_class] * 100
-    if predicted_class == 1:
-        advice = (
-            f"According to our model, you have a high risk of heart disease. "
-            f"The model predicts that your probability of having heart disease is {probability:.1f}%. "
-            "While this is just an estimate, it suggests that you may be at significant risk. "
-            "I recommend that you consult a cardiologist as soon as possible for further evaluation and "
-            "to ensure you receive an accurate diagnosis and necessary treatment."
-        )
-    else:
-        advice = (
-            f"According to our model, you have a low risk of heart disease. "
-            f"The model predicts that your probability of not having heart disease is {probability:.1f}%. "
-            "However, maintaining a healthy lifestyle is still very important. "
-            "I recommend regular check-ups to monitor your heart health, "
-            "and to seek medical advice promptly if you experience any symptoms."
-        )
-    st.write(advice)
-    # Calculate SHAP values and display force plot
-    explainer = shap.Explainer(model)
-    shap_values = explainer.shap_values(pd.DataFrame([feature_values], columns=feature_names))
-    shap.force_plot(explainer.expected_value[0], shap_values[:,:,0], pd.DataFrame([feature_values], columns=feature_names).loc[0],matplotlib=True)
-    plt.savefig("shap_force_plot.png", bbox_inches='tight', dpi=1200)
-    st.image("shap_force_plot.png")
+    # 读取 CSV 文件
